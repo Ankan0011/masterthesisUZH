@@ -1,0 +1,5 @@
+tezos-indexer/.idea
+tezos-indexer/spark-code.iml
+tezos-indexer/util.egg-info
+tezos-indexer/dist
+tezos-indexer/build
