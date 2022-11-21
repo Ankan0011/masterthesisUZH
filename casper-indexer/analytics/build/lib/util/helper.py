@@ -59,7 +59,7 @@ def loadFile(spark, path, header):
         df = spark.read.option("header", header).option("inferSchema", "true") \
                 .option("ignoreLeadingWhiteSpace", "true") \
                 .option("ignoreTrailingWhiteSpace", "true") \
-                .csv(path)
+                .csv(path+"/*.csv")
         return df
 
 def loadJsonFile(spark, path):
@@ -73,4 +73,9 @@ def loadJsonFile(spark, path):
 #To Parse the Date timestamp to Date Object
 def dateParser(Timestamp):    
     mydate = datetime.strptime(Timestamp, "%Y-%m-%d %H:%M:%S")
+    return mydate
+
+#To Parse the Date timestamp to Date Object
+def dateMilParser(Timestamp):    
+    mydate = datetime.strptime(Timestamp, "%Y-%m-%d %H:%M:%S.%f")
     return mydate

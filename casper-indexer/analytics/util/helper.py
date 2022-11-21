@@ -74,3 +74,8 @@ def loadJsonFile(spark, path):
 def dateParser(Timestamp):    
     mydate = datetime.strptime(Timestamp, "%Y-%m-%d %H:%M:%S")
     return mydate
+
+#To Parse the Date timestamp to Date Object
+def dateMilParser(Timestamp):    
+    mydate = datetime.strptime(Timestamp, "%Y-%m-%d %H:%M:%S.%f")
+    return mydate
