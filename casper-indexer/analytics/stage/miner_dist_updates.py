@@ -52,5 +52,5 @@ for x in listSrcDir:
         g = GraphFrame(all_acc, e2).dropIsolatedVertices()
         results = g.shortestPaths(landmarks=data_array)
         final = results.select("id","distances").withColumn("distances",udf_minPathExtractor(col("distances"), col("id"))).withColumn("year_week", lit(str(dirname.split("=")[-1])))
-        final.show(10)
-        # final.write.option("header", True).mode('overwrite').csv(destination_path+"/"+dirname)
+        # final.show(10)
+        final.write.option("header", True).mode('overwrite').csv(destination_path+"/"+dirname)
