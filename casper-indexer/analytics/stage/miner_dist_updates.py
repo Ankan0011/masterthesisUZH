@@ -19,7 +19,6 @@ e1_final=["src","dst","relationship"]
 listDesDir =[x[0].split("/")[-1] for x in os.walk(destination_path)]
 listSrcDir  = [x[0] for x in os.walk(txs_path)]
 
-
 df_new = loadFile(spark, validator_path, True ).withColumnRenamed("public_key", "id").distinct()
 all_acc = loadFile(spark, all_accounts, True ).withColumnRenamed("account", "id").distinct()
 
