@@ -13,7 +13,7 @@ from collections import Counter
 test_txs_path="/mnt/indexer-build/migrated_data/stage/all_txs"
 # accounts_path="/mnt/indexer-build/migrated_data/raw/rest_Accounts"
 # destination_path="/mnt/indexer-build/migrated_data/curated/gini"
-destination_path="/mnt/indexer-build/migrated_data/stage/miners_dist_node/"
+destination_path="/mnt/indexer-build/migrated_data/stage/Gini_txs/"
 
 # Variables
 spark = initalizeGraphSpark("Gini")
@@ -59,33 +59,33 @@ temp_df.show()
 for x in newlist2:
     if x.find("date=20")  != -1:
         dirname = x.split("/")[-1]
-        #if not (dirname in listDesDir):
-        print("Not Found it :"+dirname.split("=")[-1])
-        df_new = loadFile(spark, x, True ).select(e1_cols).filter(col("SenderId").isNotNull()).filter(col("TargetId").isNotNull())
-        e1 = df_new.filter(df_new['Amount'] != 0)
-        temp_df = temp_df.union(e1)
-        print("Count :"+str(temp_df.count()))
-        # df_new.show(10)
+        if not (dirname in listDesDir):
+            print("Not Found it :"+dirname.split("=")[-1])
+            df_new = loadFile(spark, x, True ).select(e1_cols).filter(col("SenderId").isNotNull()).filter(col("TargetId").isNotNull())
+            e1 = df_new.filter(df_new['Amount'] != 0)
+            temp_df = temp_df.union(e1)
+            print("Count :"+str(temp_df.count()))
+            # df_new.show(10)
 
-        final = temp_df.groupBy("SenderId","TargetId").sum("Amount").withColumnRenamed("sum(Amount)","Amount").toPandas()
-        # G = nx.from_pandas_edgelist(
-        #     final, 
-        #     "SenderId",
-        #     "TargetId", 
-        #     "Amount",
-        #     create_using=nx.MultiDiGraph())
-        # ins = dict(G.in_degree(weight='Amount'))
-        # outs = dict(G.out_degree(weight='Amount'))
-        # z = (Counter(ins)-Counter(outs))
-        # df_pandas = pd.DataFrame.from_dict(z, orient='index')
-        # df_pandas['node'] = df_pandas.index
-        # df_pandas['year_week'] = str(dirname.split("=")[-1])
-        # # Write out the df_pandas dataframe for all the node balance
-        # next = spark.createDataFrame(df_pandas).withColumnRenamed("0","balance")
-        # Person=Row( "year_week","gini_coff")
-        # data = [ Person( str(dirname.split("=")[-1]), str(gini(df_pandas.iloc[:, 0].to_numpy()))) ]
-        # next = spark.createDataFrame(data)
-        temp_df.show()
-        # next.write.option("header", True).mode('overwrite').csv(destination_path+"/"+dirname)
-        #temp_df = e1
+            final = temp_df.groupBy("SenderId","TargetId").sum("Amount").withColumnRenamed("sum(Amount)","Amount")
+            # G = nx.from_pandas_edgelist(
+            #     final, 
+            #     "SenderId",
+            #     "TargetId", 
+            #     "Amount",
+            #     create_using=nx.MultiDiGraph())
+            # ins = dict(G.in_degree(weight='Amount'))
+            # outs = dict(G.out_degree(weight='Amount'))
+            # z = (Counter(ins)-Counter(outs))
+            # df_pandas = pd.DataFrame.from_dict(z, orient='index')
+            # df_pandas['node'] = df_pandas.index
+            # df_pandas['year_week'] = str(dirname.split("=")[-1])
+            # # Write out the df_pandas dataframe for all the node balance
+            # next = spark.createDataFrame(df_pandas).withColumnRenamed("0","balance")
+            # Person=Row( "year_week","gini_coff")
+            # data = [ Person( str(dirname.split("=")[-1]), str(gini(df_pandas.iloc[:, 0].to_numpy()))) ]
+            # next = spark.createDataFrame(data)
+            # final.show()
+            final.write.option("header", True).mode('overwrite').csv(destination_path+"/"+dirname)
+            #temp_df = e1
 spark.stop()

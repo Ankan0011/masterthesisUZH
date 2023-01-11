@@ -29,21 +29,30 @@ listSrcDir  = [x[0] for x in os.walk(test_txs_path)]
 for x in listSrcDir:
     if x.find("relationship=20")  != -1:
         dirname = x.split("/")[-1]
-        if not (dirname in listDesDir):
-            print("Not Found it :"+dirname)
-            df_new = loadFile(spark, x, True )
-            e1 = df_new.groupBy("src","dst").count().withColumn("relationship",lit('txs')).select(e1_final).toPandas()
-            try:
-                G = nx.from_pandas_edgelist(e1, "src", "dst", create_using=nx.DiGraph())
-                avg_clust = nx.average_clustering(G)
-                # coeff = nx.degree_assortativity_coefficient(G)
-                print("Coefficient is :"+str(avg_clust))
-                data = [(str(avg_clust), dirname.split("=")[-1])]
-                next = spark.createDataFrame(data).toDF(*final_columns)
-                # next.show()
-                next.write.option("header", True).mode('overwrite').csv(destination_path+"/"+dirname)
-            except NameError:
-                print("Exception")
-                print(NameError)
+        #if not (dirname in listDesDir):
+        print("Not Found it :"+dirname)
+        df_new = loadFile(spark, x, True )
+        e1 = df_new.groupBy("src","dst").count().withColumn("relationship",lit('txs')).select(e1_final).toPandas()
+                #.sample(False, 0.2, 42) \
+                
+        try:
+            G = nx.from_pandas_edgelist(e1, "src", "dst", create_using=nx.DiGraph())
+            avg_clust = nx.average_clustering(G)
+            n = G.number_of_nodes()
+            print("Number of nodes :"+str(G.number_of_nodes()))
+
+            G_rand = nx.erdos_renyi_graph(n, avg_clust)    
+            avg_clust_rand = nx.average_clustering(G_rand)
+            # coeff = nx.degree_assortativity_coefficient(G)
+            print("Coefficient is :"+str(avg_clust))
+            print("Coefficient is Random Graph:"+str(avg_clust_rand))
+            
+            data = [(str(avg_clust), dirname.split("=")[-1])]
+            next = spark.createDataFrame(data).toDF(*final_columns)
+            # next.show()
+            #next.write.option("header", True).mode('overwrite').csv(destination_path+"/"+dirname)
+        except NameError:
+            print("Exception")
+            print(NameError)
 
 spark.stop()
