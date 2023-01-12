@@ -5,6 +5,15 @@ import os
 import numpy as np
 import networkx as nx
 import powerlaw
+import ray
+
+ray.init()
+
+@ray.remote
+def ERGraphCoef(n, avg_clust):
+    G_rand = nx.erdos_renyi_graph(n, avg_clust)    
+    print("Reached end")
+    return G_rand
 
 # Paths
 test_txs_path="/mnt/indexer-build/migrated_data/stage/SSC"
@@ -39,10 +48,16 @@ for x in listSrcDir:
             G = nx.from_pandas_edgelist(e1, "src", "dst", create_using=nx.DiGraph())
             avg_clust = nx.average_clustering(G)
             n = G.number_of_nodes()
-            print("Number of nodes :"+str(G.number_of_nodes()))
+            k = G.deg
+            # print("Starting ray :")
 
-            G_rand = nx.erdos_renyi_graph(n, avg_clust)    
-            avg_clust_rand = nx.average_clustering(G_rand)
+            # futures = [ERGraphCoef.remote(n=n, avg_clust= avg_clust) for i in range(25)]
+            # G_rand = ray.get(futures)
+    
+            #  avg_clust_rand = nx.average_clustering(G_rand)
+            # ERGraphCoef(n, avg_clust)
+            # G_rand = nx.erdos_renyi_graph(n, avg_clust)    
+            # avg_clust_rand = nx.average_clustering(G_rand)
             # coeff = nx.degree_assortativity_coefficient(G)
             print("Coefficient is :"+str(avg_clust))
             print("Coefficient is Random Graph:"+str(avg_clust_rand))
