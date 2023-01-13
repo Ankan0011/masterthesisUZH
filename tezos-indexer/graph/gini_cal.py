@@ -58,7 +58,7 @@ for i in listSrcDirNew:
 
 new_seq = np.sort(newlist)
 for i in new_seq:
-    new = str("/mnt/indexer-build/migrated_data/stage/all_txs/date="+i)
+    new = str("/mnt/indexer-build/migrated_data/stage/Gini_txs/date="+i)
     newlist2.append(new)
 
 
